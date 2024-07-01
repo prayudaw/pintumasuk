@@ -19,6 +19,8 @@ class Home extends CI_Controller
         $this->load->view('home', $data);
     }
 
+
+    
     public function getAnggota()
     {
         $nim = $this->input->post('nim');

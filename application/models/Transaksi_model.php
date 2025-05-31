@@ -25,6 +25,8 @@ class Transaksi_model extends CI_Model
     {
         $this->db->from($this->table);
         $i = 0;
+
+
         foreach ($this->column_search as $item) // loop kolom 
         {
             if ($this->input->post('search')['value']) // jika datatable mengirim POST untuk search
@@ -41,6 +43,35 @@ class Transaksi_model extends CI_Model
             }
             $i++;
         }
+
+
+        ## Search
+        if (!empty($_POST['searchNim'])) {
+            $this->db->where('no_mhs like "%' . $_POST['searchNim'] . '%"');
+        }
+
+        if (!empty($_POST['searchNama'])) {
+            $this->db->where('nama like "%' . $_POST['searchNama'] . '%"');
+        }
+
+
+        if (!empty($_POST['searchFakultas'])) {
+            $this->db->where('fakultas like "%' . $_POST['searchFakultas'] . '%"');
+        }
+
+
+        if (!empty($_POST['searchJurusan'])) {
+            $this->db->where('jurusan like "%' . $_POST['searchJurusan'] . '%"');
+        }
+
+
+        if (!empty($_POST['searchTanggal'])) {
+            $tgl = explode(" - ", $_POST['searchTanggal']);
+            $tgl1 = date('y-m-d', strtotime($tgl[0]));
+            $tgl2 = date('y-m-d', strtotime($tgl[1]));
+            $this->db->where("waktu_kunjung BETWEEN '" . $tgl1 . " 00:00:00' and '" . $tgl2 . " 23:00:00'");
+        }
+
 
         // jika datatable mengirim POST untuk order
         if ($this->input->post('order')) {
@@ -62,6 +93,8 @@ class Transaksi_model extends CI_Model
         if ($this->input->post('length') != -1)
             $this->db->limit($this->input->post('length'), $this->input->post('start'));
         $query = $this->db->get();
+        // echo $this->db->last_query();
+        // die();
         return $query->result();
     }
 
@@ -85,6 +118,34 @@ class Transaksi_model extends CI_Model
         }
         return $this->db->count_all_results();
     }
+
+
+    public function getDataExcel($post)
+    {
+        $this->db->from('pengunjung');
+
+        if (!empty($post['nim'])) {
+            $this->db->where('no_mhs like "%' . $post['nim'] . '%"');
+        }
+
+        if (!empty($post['nama'])) {
+            $this->db->where('nama like "%' . $post['nama'] . '%"');
+        }
+
+        if (!empty($post['fakultas'])) {
+            $this->db->where('fakultas like "%' . $post['fakultas'] . '%"');
+        }
+        if (!empty($post['tanggal'])) {
+            $tgl = explode(" - ", $post['tanggal']);
+            $tgl1 = date('y-m-d', strtotime($tgl[0]));
+            $tgl2 = date('y-m-d', strtotime($tgl[1]));
+            $this->db->where("waktu_kunjung BETWEEN '" . $tgl1 . " 00:00:00' and '" . $tgl2 . " 23:00:00'");
+        }
+        $this->db->order_by('waktu_kunjung', 'DESC');
+        $query = $this->db->get();
+        return $query->result();
+    }
+
 
     public function insertPengunjung($data)
     {

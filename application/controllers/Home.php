@@ -1,5 +1,4 @@
-<?php
-defined('BASEPATH') or exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 class Home extends CI_Controller
 {
@@ -12,8 +11,8 @@ class Home extends CI_Controller
     }
 
     public function index()
-    {   
-        
+    {
+
         $data['data_pengunjung_harian'] = (int) $this->transaksi_model->getDataPengunjungHarian()->jumlah;
         $data['data_pengunjung_bulanan'] = (int) $this->transaksi_model->getDataPengunjungBulanan()->jumlah;
         $this->load->view('home', $data);
@@ -27,16 +26,16 @@ class Home extends CI_Controller
         $get_data_anggota = $this->anggota_model->getAnggotaById($nim);
 
 
-       
-        $message_blokir= '';
-        
+
+        $message_blokir = '';
+
 
         $status = 2;
         $message = '';
         $foto = '';
         $image = '';
         $data_anggota = '';
-        
+
         if (empty($get_data_anggota)) {
             $message = 'Gagal Data Tidak Ditemukan Silakan Menghubungi Petugas';
         } else if (count($get_data_anggota) > 0) {
@@ -44,15 +43,13 @@ class Home extends CI_Controller
                 $message = 'Keanggotaan Tidak Aktif';
             } elseif ($get_data_anggota['status'] == 'BP') {
                 $message = 'Sudah Bebas Pustaka';
-            } 
-            elseif ($get_data_anggota['status'] == 'DO') {
+            } elseif ($get_data_anggota['status'] == 'DO') {
                 $message = 'Keanggotaan Sudah Drop Out';
-            }
-            else {
-                $check_blokir=$this->anggota_model->getAnggotaBlokir($nim);
+            } else {
+                $check_blokir = $this->anggota_model->getAnggotaBlokir($nim);
 
-                if ($check_blokir !==NULL) { 
-                    $message_blokir=$check_blokir['keterangan'];
+                if ($check_blokir !== NULL) {
+                    $message_blokir = $check_blokir['keterangan'];
                 }
                 $this->checkout($get_data_anggota);
                 $data_anggota = $get_data_anggota;
@@ -60,9 +57,8 @@ class Home extends CI_Controller
                 $status = 1;
                 $message = 'Berhasil';
             }
-
         }
-        echo json_encode(array('status' => $status, 'foto' => $image, 'data' => $data_anggota, 'message' => $message,'message_blokir' =>$message_blokir));
+        echo json_encode(array('status' => $status, 'foto' => $image, 'data' => $data_anggota, 'message' => $message, 'message_blokir' => $message_blokir));
     }
 
     private function checkout($data)
@@ -150,5 +146,4 @@ class Home extends CI_Controller
         );
         echo json_encode($data);
     }
-
 }

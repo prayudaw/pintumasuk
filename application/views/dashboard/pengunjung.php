@@ -143,11 +143,9 @@
                    var nim = $("#nim").val();
                    var fakultas = $("#fakultas").val();
                    var jurusan = $("#jurusan").val();
-                   location.href = "<?= base_url() ?>admin/pengunjung/export_excel?tanggal=" + tanggal + "&nama=" + nama + "&nim=" + nim + "&fakultas=" + fakultas + "&jurusan=" + jurusan;
+                   location.href = "<?= base_url() ?>admin/pengunjung/export_excel?nama=" + nama;
+
                });
-
-
-
            });
            //Date range picker
            $('#tanggal').daterangepicker({

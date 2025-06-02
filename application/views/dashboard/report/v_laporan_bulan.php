@@ -9,6 +9,11 @@
   header("Content-type: application/vnd.ms-excel");
   header("Content-Disposition: attachment; filename=Laporan Data Pengunjung  " . $tittle . ".xls");
 
+  // header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  // header('Content-Disposition: attachment; filename="laporan_data_pengunjung.xlsx"'); // Set nama file excel nya
+  // header('Cache-Control: max-age=0');
+  // header("Content-type: application/vnd.ms-excel");
+
   $table = '
     <h2>LAPORAN ' . $tittle . '</h2>
      <table border = "1">
@@ -28,11 +33,8 @@
           </tr>';
   }
   $table .= '</table>';
-
   echo $table;
-
   ?>
-
 </body>
 
 </html>

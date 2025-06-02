@@ -123,7 +123,6 @@ class Transaksi_model extends CI_Model
     public function getDataExcel($post)
     {
         $this->db->from('pengunjung');
-
         if (!empty($post['nim'])) {
             $this->db->where('no_mhs like "%' . $post['nim'] . '%"');
         }
@@ -137,12 +136,14 @@ class Transaksi_model extends CI_Model
         }
         if (!empty($post['tanggal'])) {
             $tgl = explode(" - ", $post['tanggal']);
-            $tgl1 = date('y-m-d', strtotime($tgl[0]));
-            $tgl2 = date('y-m-d', strtotime($tgl[1]));
+            $tgl1 = date('Y-m-d', strtotime($tgl[0]));
+            $tgl2 = date('Y-m-d', strtotime($tgl[1]));
             $this->db->where("waktu_kunjung BETWEEN '" . $tgl1 . " 00:00:00' and '" . $tgl2 . " 23:00:00'");
         }
         $this->db->order_by('waktu_kunjung', 'DESC');
+        $this->db->limit(10);
         $query = $this->db->get();
+
         return $query->result();
     }
 

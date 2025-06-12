@@ -13,6 +13,7 @@ class Pengunjung extends CI_Controller
         parent::__construct();
         $this->load->model('transaksi_model');
         $this->load->model('auth_model');
+        $this->load->model('fakultas_model');
         // if (!$this->auth_model->current_user()) {
         //     redirect('auth/login');
         // }
@@ -24,6 +25,29 @@ class Pengunjung extends CI_Controller
         // $data['page'] = 'Dashboard';
         $data['title'] = 'Data Pengunjung';
         $this->load->view('dashboard/pengunjung', $data);
+    }
+
+    public function getFakultasListApi()
+    {
+        if ($this->input->get('searchTerm', TRUE)) {
+            $data = $this->fakultas_model->get_daftar_fakultas_like($this->input->get('searchTerm', TRUE));
+        } else {
+            $data = $this->fakultas_model->get_daftar_fakultas();
+        }
+
+        $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+
+    public function getJurusanListApi()
+    {
+        if ($this->input->get('searchTerm', TRUE)) {
+            $data = $this->fakultas_model->get_daftar_jurusan_like($this->input->get('searchTerm', TRUE));
+        } else {
+            $data = $this->fakultas_model->get_daftar_jurusan();
+        }
+
+        $this->output->set_status_header(200)->set_content_type('application/json')->set_output(json_encode($data));
     }
 
 

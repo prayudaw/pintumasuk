@@ -91,225 +91,225 @@
 </body>
 
 <script type="text/javascript">
-window.onload = function() {
-    $('#nim').focus();
-    setInterval("getStatistik()", 9000);
-}
+    window.onload = function() {
+        $('#nim').focus();
+        setInterval("getStatistik()", 9000);
+    }
 
-function getStatistik() {
-    //pengumuman()
-    $.ajax({
-        type: "get",
-        url: "<?php echo base_url('home/getStatistik') ?>",
-        dataType: "json",
-        success: function(response) {
-            $('#chart_element').remove();
+    function getStatistik() {
+        //pengumuman()
+        $.ajax({
+            type: "get",
+            url: "<?php echo base_url('home/getStatistik') ?>",
+            dataType: "json",
+            success: function(response) {
+                $('#chart_element').remove();
 
-            if (response) {
-                var data = [];
-                for (var i = 0; i < response.data.length; i++) {
-                    data[i] = {
-                        label: response.data[i].fakultas,
-                        y: response.data[i].jumlah,
-                        color: response.data[i].color,
-                        indexLabel: "{y}",
-                        indexLabelFontColor: "white",
-                        indexLabelBackgroundColor: "black"
+                if (response) {
+                    var data = [];
+                    for (var i = 0; i < response.data.length; i++) {
+                        data[i] = {
+                            label: response.data[i].fakultas,
+                            y: response.data[i].jumlah,
+                            color: response.data[i].color,
+                            indexLabel: "{y}",
+                            indexLabelFontColor: "white",
+                            indexLabelBackgroundColor: "black"
+                        };
+                    }
+
+                    var tot_harian = response.data_pengunjung.harian;
+                    var tot_bulan = response.data_pengunjung.bulanan;
+
+                    var options = {
+                        title: {
+                            text: "Statistik Pengunjung",
+                            fontColor: "#F5DEB3",
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                            fontSize: 40,
+                        },
+
+                        subtitles: [{
+                            text: "Total Pengunjung Hari ini : " + tot_harian +
+                                "   Total Pengunjung Bulan ini :  " + tot_bulan,
+                            fontColor: "#F5DEB3",
+                            //Uncomment properties below to see how they behave
+                            //fontColor: "red",
+                            fontFamily: "cursive",
+                            fontSize: 17
+                        }],
+                        backgroundColor: "transparent",
+                        axisX: {
+                            labelMaxWidth: 85,
+                            labelFontColor: "white",
+                            fontSize: 50,
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                            horizontalAlign: "center",
+                        },
+                        axisY: {
+                            labelFontColor: "white",
+                            fontSize: 0,
+                            fontFamily: "sans-serif",
+                            fontWeight: "bold",
+                        },
+
+                        data: [{
+                            // Change type to "doughnut", "line", "splineArea", etc.
+                            type: "column",
+                            dataPoints: data
+                        }]
                     };
                 }
+                $(".chart_header").append(
+                    '<div id="chart_element"><div id="chartContainer" style="height: 400px; width: 100%;margin-top:40px"></div></div>'
+                );
+                $("#chartContainer").CanvasJSChart(options);
 
-                var tot_harian = response.data_pengunjung.harian;
-                var tot_bulan = response.data_pengunjung.bulanan;
-
-                var options = {
-                    title: {
-                        text: "Statistik Pengunjung",
-                        fontColor: "#F5DEB3",
-                        fontFamily: "sans-serif",
-                        fontWeight: "bold",
-                        fontSize: 40,
-                    },
-
-                    subtitles: [{
-                        text: "Total Pengunjung Hari ini : " + tot_harian +
-                            "   Total Pengunjung Bulan ini :  " + tot_bulan,
-                        fontColor: "#F5DEB3",
-                        //Uncomment properties below to see how they behave
-                        //fontColor: "red",
-                        fontFamily: "cursive",
-                        fontSize: 17
-                    }],
-                    backgroundColor: "transparent",
-                    axisX: {
-                        labelMaxWidth: 85,
-                        labelFontColor: "white",
-                        fontSize: 50,
-                        fontFamily: "sans-serif",
-                        fontWeight: "bold",
-                        horizontalAlign: "center",
-                    },
-                    axisY: {
-                        labelFontColor: "white",
-                        fontSize: 0,
-                        fontFamily: "sans-serif",
-                        fontWeight: "bold",
-                    },
-
-                    data: [{
-                        // Change type to "doughnut", "line", "splineArea", etc.
-                        type: "column",
-                        dataPoints: data
-                    }]
-                };
             }
-            $(".chart_header").append(
-                '<div id="chart_element"><div id="chartContainer" style="height: 400px; width: 100%;margin-top:40px"></div></div>'
-            );
-            $("#chartContainer").CanvasJSChart(options);
+        });
 
+
+    }
+
+
+    function remove() {
+        $('#message').remove();
+        $('#data').remove();
+        $('#nim').val('');
+    }
+
+    var element = '';
+    var element_message = '';
+    $('#scan_anggota').keypress((e) => {
+        if (e.which === 13) {
+            e.preventDefault();
+            var nim = $('#nim').val();
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url('home/getAnggota') ?>",
+                data: {
+                    nim: nim
+                },
+                dataType: "json",
+                success: function(response) {
+                    if (response.status == 1) {
+
+                        if (response.message_blokir) {
+
+                            $(".modal-body").html(
+                                '<h4 style="text-align:center;color:red">Kartu Anggota Anda Sedang Diblokir</h4><p>Alasan:' +
+                                response
+                                .message_blokir + '</p>')
+                            $('#myModal').modal('show');
+
+                            setTimeout(function() {
+                                $('#myModal').modal('hide');
+                                $('.modal-body').html('');
+                                $('#nim').focus();
+                            }, 3000);
+
+
+                        }
+
+                        element = '<div id="data"><img class="img-fluid" src="' + response.foto +
+                            '" alt="User profile picture"><h3>' + response.data.nama + '</h3><h3>' +
+                            response.data.no_mhs + '</h3><h3>' + response.data.fakultas + '</h3></div>';
+                        element_message =
+                            '<p id="message" style="color:#1dff00;font-size:30px;text-align:center"><i class="fas fa-check-square"></i> ' +
+                            response.message + '</p>';
+                    } else {
+                        element = '<div id="data"></div>';
+                        element_message =
+                            '<p id="message" style="color:#f20404;font-size:30px;text-align:center"><i class="fas fa-times"></i> ' +
+                            response.message + '</p>';
+                    }
+
+                    $("#data-anggota").append(element);
+                    $('#info-message').append(element_message);
+                    setTimeout("remove()", 2000);
+                    $('#nim').focus();
+                }
+            });
         }
+
     });
 
 
-}
 
+    function pengumuman() {
+        var today = new Date();
+        var hr = today.getHours();
+        var min = today.getMinutes();
+        var d = checkTime(hr) + ':' + checkTime(min);
 
-function remove() {
-    $('#message').remove();
-    $('#data').remove();
-    $('#nim').val('');
-}
+        var hr_ini = today.getDay();
+        //selain hari sabtu ada istirahat
+        if (hr_ini !== 6) {
 
-var element = '';
-var element_message = '';
-$('#scan_anggota').keypress((e) => {
-    if (e.which === 13) {
-        e.preventDefault();
-        var nim = $('#nim').val();
-        $.ajax({
-            type: "POST",
-            url: "<?php echo base_url('home/getAnggota') ?>",
-            data: {
-                nim: nim
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.status == 1) {
-
-                    if (response.message_blokir) {
-
-                        $(".modal-body").html(
-                            '<h4 style="text-align:center;color:red">Kartu Anggota Anda Sedang Diblokir</h4><p>Alasan:' +
-                            response
-                            .message_blokir + '</p>')
-                        $('#myModal').modal('show');
-
-                        setTimeout(function() {
-                            $('#myModal').modal('hide');
-                            $('.modal-body').html('');
-                            $('#nim').focus();
-                        }, 3000);
-
-
-                    }
-
-                    element = '<div id="data"><img class="img-fluid" src="' + response.foto +
-                        '" alt="User profile picture"><h3>' + response.data.nama + '</h3><h3>' +
-                        response.data.no_mhs + '</h3><h3>' + response.data.fakultas + '</h3></div>';
-                    element_message =
-                        '<p id="message" style="color:#1dff00;font-size:30px;text-align:center"><i class="fas fa-check-square"></i> ' +
-                        response.message + '</p>';
-                } else {
-                    element = '<div id="data"></div>';
-                    element_message =
-                        '<p id="message" style="color:#f20404;font-size:30px;text-align:center"><i class="fas fa-times"></i> ' +
-                        response.message + '</p>';
-                }
-
-                $("#data-anggota").append(element);
-                $('#info-message').append(element_message);
-                setTimeout("remove()", 2000);
-                $('#nim').focus();
-            }
-        });
-    }
-
-});
-
-
-
-function pengumuman() {
-    var today = new Date();
-    var hr = today.getHours();
-    var min = today.getMinutes();
-    var d = checkTime(hr) + ':' + checkTime(min);
-
-    var hr_ini = today.getDay();
-    //selain hari sabtu ada istirahat
-    if (hr_ini !== 6) {
-
-        var awal = '11:59';
-        var akhir = '12:55';
-
-
-        if (hr_ini == 5) {
-            var awal = '11:30';
+            var awal = '11:59';
             var akhir = '12:55';
+
+
+            if (hr_ini == 5) {
+                var awal = '11:30';
+                var akhir = '12:55';
+            }
+
+            console.log(awal);
+            console.log(akhir);
+            if (awal < d && akhir > d) {
+                window.location = "<?php echo base_url('pengumuman') ?>";
+            }
+
+
         }
 
-        console.log(awal);
-        console.log(akhir);
-        if (awal < d && akhir > d) {
-            window.location = "<?php echo base_url('pengumuman') ?>";
-        }
+
 
 
     }
 
 
 
+    function startTime() {
+        var today = new Date();
+        var hr = today.getHours();
+        var min = today.getMinutes();
+        var sec = today.getSeconds();
+        ap = (hr < 12) ? "<span></span>" : "<span></span>";
+        hr = (hr == 0) ? 12 : hr;
+        // hr = (hr > 12) ? hr - 12 : hr;
+        //Add a zero in front of numbers<10
+        hr = checkTime(hr);
+        min = checkTime(min);
+        sec = checkTime(sec);
+        document.getElementById("clock").innerHTML = hr + ":" + min + ":" + sec + " " + ap;
 
-}
+        var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober',
+            'November', 'Desember'
+        ];
+        var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        var curWeekDay = days[today.getDay()];
+        var curDay = today.getDate();
+        var curMonth = months[today.getMonth()];
+        var curYear = today.getFullYear();
+        var date = curWeekDay + ", " + curDay + " " + curMonth + " " + curYear;
+        document.getElementById("date").innerHTML = date;
 
-
-
-function startTime() {
-    var today = new Date();
-    var hr = today.getHours();
-    var min = today.getMinutes();
-    var sec = today.getSeconds();
-    ap = (hr < 12) ? "<span></span>" : "<span></span>";
-    hr = (hr == 0) ? 12 : hr;
-    // hr = (hr > 12) ? hr - 12 : hr;
-    //Add a zero in front of numbers<10
-    hr = checkTime(hr);
-    min = checkTime(min);
-    sec = checkTime(sec);
-    document.getElementById("clock").innerHTML = hr + ":" + min + ":" + sec + " " + ap;
-
-    var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober',
-        'November', 'Desember'
-    ];
-    var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    var curWeekDay = days[today.getDay()];
-    var curDay = today.getDate();
-    var curMonth = months[today.getMonth()];
-    var curYear = today.getFullYear();
-    var date = curWeekDay + ", " + curDay + " " + curMonth + " " + curYear;
-    document.getElementById("date").innerHTML = date;
-
-    var time = setTimeout(function() {
-        startTime()
-    }, 500);
-}
-
-function checkTime(i) {
-    if (i < 10) {
-        i = "0" + i;
+        var time = setTimeout(function() {
+            startTime()
+        }, 500);
     }
-    return i;
-}
-startTime();
+
+    function checkTime(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+    startTime();
 </script>
 
 </html>

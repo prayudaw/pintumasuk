@@ -37,20 +37,23 @@
                                            </div><br />
                                            <div class="form-group">
                                                <label>JURUSAN</label>
-                                               <input type="text" class="form-control" placeholder="Masukan jurusan" id="jurusan">
-                                           </div><br />
+                                               <select name="jurusan" class="form-control select2bs4-jurusan" id="jurusan">
+                                                   <option></option>
+                                               </select>
+                                           </div> <br />
                                        </div>
                                        <div class="col-md-6">
                                            <div class="form-group">
                                                <label>FAKULTAS</label>
-                                               <input type="text" class="form-control" placeholder="Masukan Fakultas" id="fakultas">
-                                           </div><br />
+                                               <select name="fakultas" class="form-control select2bs4-fakultas" id="fakultas">
+                                                   <option></option>
+                                               </select>
+                                           </div> <br />
+
                                            <!-- Date range -->
                                            <div class="form-group">
                                                <label>WAKTU KUNJUNG:</label>
-
                                                <div class="input-group">
-
                                                    <input type="text" class="form-control" id="tanggal" autocomplete="off" value="">
                                                </div><br />
                                                <!-- /.input group -->
@@ -98,6 +101,55 @@
 
        <?php $this->load->view('dashboard/template/footer') ?>
        <script type="text/javascript">
+           $('.select2bs4-jurusan').select2({
+               placeholder: "-- Pilih Jurusan --",
+               theme: 'bootstrap4',
+               ajax: {
+                   dataType: 'json',
+                   delay: 250,
+                   url: '<?php echo base_url('index.php/admin/pengunjung/getJurusanListApi'); ?>',
+                   data: function(params) {
+                       return {
+                           searchTerm: params.term
+                       }
+                   },
+                   processResults: function(data) {
+                       return {
+                           results: $.map(data, function(obj) {
+                               return {
+                                   id: obj.jurusan,
+                                   text: obj.jurusan
+                               };
+                           })
+                       };
+                   }
+               }
+           });
+
+           $('.select2bs4-fakultas').select2({
+               placeholder: "-- Pilih Fakultas --",
+               theme: 'bootstrap4',
+               ajax: {
+                   dataType: 'json',
+                   delay: 250,
+                   url: '<?php echo base_url('index.php/admin/pengunjung/getFakultasListApi'); ?>',
+                   data: function(params) {
+                       return {
+                           searchTerm: params.term
+                       }
+                   },
+                   processResults: function(data) {
+                       return {
+                           results: $.map(data, function(obj) {
+                               return {
+                                   id: obj.fakultas,
+                                   text: obj.fakultas
+                               };
+                           })
+                       };
+                   }
+               }
+           });
            $(document).ready(function() {
                var table;
                table = $('#table').DataTable({

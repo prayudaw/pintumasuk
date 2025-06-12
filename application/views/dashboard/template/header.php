@@ -16,6 +16,9 @@
 
   <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
 
+  <!-- select 2 -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
   <!-- Custom style daterangepicker-->
   <link rel="stylesheet" href="<?php echo base_url('assets/plugins/daterangepicker/daterangepicker.css') ?>">
 
